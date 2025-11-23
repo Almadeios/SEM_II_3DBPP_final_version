@@ -25,7 +25,6 @@
 # [2] Trimesh library: poses.compute_stable_poses, CollisionManager.
 # ------------------------------------------------------------
 
-# secuencial_kitchen.py
 import argparse
 import os
 import json
@@ -213,6 +212,7 @@ if ARGS.random_seed is not None:
     random.seed(ARGS.random_seed)
 
 # -------------------- Rutas --------------------
+# Referencia: datasets Blockout/Kitchen/General tomados de Zhao et al. (2023) para reproducir secuencias.
 # Rutas y archivos del dataset de Zhao et al. (2023).
 # id2shape.pt y test_sequence.pt provienen de su distribucion;
 # aqui solo se consumen para reproducibilidad de secuencias.
@@ -233,6 +233,7 @@ CAVITY_MARGIN = 0.01
 CAVITY_DEPTH_FACTOR = 0.25
 
 # ---------------- Parametros del buffer ----------------
+# Referencia: uso del concepto de buffer K inspirado en Zhao et al. (2023).
 # BUFFER_SIZE: ventana de candidatos inspirada en el "buffer K" de Zhao et al. (2023).
 # Adaptacion local: cola fija + seleccion codiciosa por score.
 BUFFER_SIZE = max(1, min(10, int(ARGS.buffer_size)))      # rango seguro 1..10
@@ -254,6 +255,7 @@ print(f"Dataset={ARGS.dataset} | Step={STEP:.3f} m | K={BUFFER_SIZE} | Secuencia
 # ==========================================================
 #                     Heightmap helpers
 # ==========================================================
+# Referencia: Implementacion propia — heightmap, soporte, percentil 90, cavidades, caida, score, repacks, pipeline secuencial.
 # Heightmap 2D: implementación propia (discretización por STEP).
 NX = max(1, int(np.floor(CONTAINER_DIMS[0] / STEP)) + 1)
 NY = max(1, int(np.floor(CONTAINER_DIMS[1] / STEP)) + 1)
@@ -302,6 +304,7 @@ def inside_container_bounds(mesh_world):
     return True
 
 # ---------- Poses estables (trimesh) con fallback ----------
+# Referencia: calculo de poses estables segun la API de trimesh.
 # compute_stable_orientations:
 # - Usa trimesh.poses.compute_stable_poses (TRIMESH) cuando esta disponible (atribución).
 # - Fallback ortogonal (Rx/Ry/Rz 90°): implementación propia para cubrir poses discretas.
@@ -562,6 +565,7 @@ def best_feasible_position_with_drop_and_stableposes(item, scene, current_height
 # ==========================================================
 #                    Proceso con buffer
 # ==========================================================
+# Referencia: pipeline de empaque secuencial/online inspirado en Zhao et al. (2023).
 def run_packing(sequence_ids, mesh_cache, stable_pose_cache, show_progress=True, initial_state=None):
     if initial_state is not None:
         placed = list(initial_state.get("placements", []))
@@ -572,6 +576,7 @@ def run_packing(sequence_ids, mesh_cache, stable_pose_cache, show_progress=True,
         volumen_total = float(initial_state.get("volumen_total", np.prod(CONTAINER_DIMS)))
     else:
         placed = []
+        # Referencia: uso de CollisionManager segun la API de trimesh.
         scene = CollisionManager()
         heightmap = np.zeros((NX, NY), dtype=np.float64)
         volumen_total = np.prod(CONTAINER_DIMS)
@@ -603,6 +608,7 @@ def run_packing(sequence_ids, mesh_cache, stable_pose_cache, show_progress=True,
         if not buffer:
             break
 
+        # Referencia: estructura GRASP (greedy + RCL + aleatoriedad) adaptada de Parreño et al. (2010).
         candidate_entries = []
         for j, item in enumerate(buffer):
             cand = best_feasible_position_with_drop_and_stableposes(item, scene, current_height, heightmap)
@@ -701,6 +707,7 @@ def better_result(candidate, current):
 mesh_cache = {}
 shape_stats = {}
 if ARGS.zhao_order:
+    # Referencia: regla de ordenamiento secuencial basada en Zhao (2017).
     type_counts = Counter(nombres_shapes)
     shape_stats = {}
     for name in type_counts:
@@ -750,6 +757,7 @@ def run_with_passes(order, show_first_pass=True):
 def solve_order(order, show_first_pass=True):
     best_result_local = None
     iterations = max(1, ARGS.grasp_iterations) if GRASP_ACTIVE else 1
+    # Referencia: estructura GRASP (greedy + RCL + aleatoriedad) adaptada de Parreño et al. (2010).
     for iter_idx in range(iterations):
         show = show_first_pass and (iter_idx == 0)
         candidate = run_with_passes(order, show_first_pass=show)
