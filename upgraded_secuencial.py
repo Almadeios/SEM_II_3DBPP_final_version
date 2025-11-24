@@ -21,8 +21,10 @@
 #   bajo sus respectivas licencias.
 #
 # Referencias:
-# [1] Zhao, et al. (2023). "Learning to Pack by Reasoning About Stability."
-# [2] Trimesh library: poses.compute_stable_poses, CollisionManager.
+# [1] Zhao, et al. (2023). "Learning Physically Realizable Skills for Online Packing of General 3D Shapes"
+# [2] Zhao, X. (2017). "The three-dimensional container loading problem"
+# [3] Parreño, F., et al. (2010). "A hybrid GRASP/VND algorithm for two-and three-dimensional bin packing"
+# [4] Trimesh library: poses.compute_stable_poses, CollisionManager.
 # ------------------------------------------------------------
 
 import argparse
