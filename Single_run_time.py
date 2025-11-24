@@ -16,7 +16,7 @@ DATASET_FLAGS = {
 
 COMMON_ARGS = [
     "--metaheuristic", "grasp",
-    "--grasp-iterations", "1",  # una sola iteracion como pediste
+    "--grasp-iterations", "1",
     "--rcl-size", "8",
     "--max-passes", "2",
     "--random-seed", "42",
