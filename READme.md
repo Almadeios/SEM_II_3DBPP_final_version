@@ -12,6 +12,12 @@ python upgraded_secuencial.py --dataset general --buffer-size 3 --step 0.02 --se
 ```
 Salida: `resultados/<dataset>/solucion_<meta>_k<k>_s####.json` y metadata en `resultados/<dataset>/meta/`.
 
+
+Estos resultados pueden ser observados 3D mediante:
+```
+python vista_secuencial.py --json resultados\general\solucion_grasp_k3_s0020.json
+```
+
 # Scripts de experimentos
 - `run_experiments_general.py`, `run_experiments_kitchen.py`, `run_experiments_blockout.py`: barren buffers [1,3,5,10] y steps [0.01,0.02,0.03] con configuración fija por dataset. Ejecuta desde la raíz:
 ```

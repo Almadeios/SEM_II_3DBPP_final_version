@@ -1,0 +1,11 @@
+# Entorno virtual de Python
+.venv/
+
+
+# Bytecode de Python
+__pycache__/
+*.py[cod]
+
+# Dataset
+resultados
+dataset
